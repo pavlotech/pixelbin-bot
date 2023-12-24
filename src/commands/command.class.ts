@@ -2,7 +2,7 @@ import { Telegraf } from "telegraf";
 import { IBotContext } from "../context/context.interface";
 
 export abstract class Command {
-  constructor (public bot: Telegraf<IBotContext>, public prisma: any) { };
+  constructor (public bot: Telegraf<IBotContext>) { };
   
-  abstract handle (logger: any): void;
+  abstract handle (logger: any, database: any): void;
 }

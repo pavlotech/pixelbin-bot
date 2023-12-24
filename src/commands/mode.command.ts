@@ -3,10 +3,10 @@ import { Command } from "./command.class";
 import { IBotContext } from "../context/context.interface";
 
 export class Mode extends Command {
-  constructor (bot: Telegraf<IBotContext>, prisma: any) {
-    super(bot, prisma);
+  constructor (bot: Telegraf<IBotContext>) {
+    super(bot);
   }
-  handle (logger: any): void {
+  handle (logger: any, database: any): void {
     
   }
 }

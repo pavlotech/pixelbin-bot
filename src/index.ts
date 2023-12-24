@@ -12,6 +12,7 @@ import { Vip } from "./commands/vip.command";
 import { Profile } from "./commands/profile.command";
 import { Photo } from "./events/photo.event";
 import { Logger } from "./types/logger.class";
+import { Database } from "./types/database.class";
 
 class Bot {
   bot: Telegraf<IBotContext>
@@ -19,18 +20,20 @@ class Bot {
   events: Event[] = [];
   prisma: any = new PrismaClient();
   logger: any = new Logger();
+  database: any = new Database(this.prisma, this.logger);
+  
   constructor (private readonly config: IConfigService) {
     this.bot = new Telegraf<IBotContext>(this.config.get('TOKEN'))
     this.bot.use((new LocalSession({ database: 'database.json' })).middleware())
   }
   init () {
     this.commands = [
-      new Start(this.bot, this.prisma),
-      new Mode(this.bot, this.prisma),
-      new Vip(this.bot, this.prisma),
-      new Profile(this.bot, this.prisma)
+      new Start(this.bot),
+      new Mode(this.bot),
+      new Vip(this.bot),
+      new Profile(this.bot)
     ]
-    for (const command of this.commands) command.handle(this.logger);
+    for (const command of this.commands) command.handle(this.logger, this.database);
     this.events = [
       new Photo(this.bot, this.prisma)
     ]

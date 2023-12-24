@@ -3,23 +3,23 @@ import { Command } from "./command.class";
 import { IBotContext } from "../context/context.interface";
 
 export class Vip extends Command {
-  constructor (bot: Telegraf<IBotContext>, prisma: any) {
-    super(bot, prisma);
+  constructor (bot: Telegraf<IBotContext>) {
+    super(bot);
   }
-  handle (logger: any): void {
+  handle (logger: any, database: any): void {
     this.bot.command('vip', async (ctx) => {
       try {
-        const currentUser = await this.prisma.user.findUnique({ where: { user_id: ctx.from.id } });
-        console.log(currentUser);
-        const updatedUser = await this.prisma.user.update({
-          where: { user_id: ctx.from.id },
-          data: { subscribe: currentUser.subscribe + 30 },
-        });
-        console.log(updatedUser);
+        const currentUser = await database.findUnique('user', { user_id: ctx.from.id } );
+        logger.log(currentUser);
+        const updatedUser = await database.update('user',
+          { user_id: ctx.from.id },
+          { subscribe: currentUser.subscribe + 30 }
+        );
+        logger.log(updatedUser);
       } catch (error) {
         logger.error(error);
       }
-      await ctx.reply('vip +1', { parse_mode: 'Markdown' })
+      await ctx.reply('vip +30', { parse_mode: 'Markdown' })
     })
   }
 }
