@@ -12,10 +12,35 @@ datasource db {
 
 model User {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
-  user_id       Int    @unique
+  userId        Int    @unique
   registry      Int 
   subscribe     Int    @unique
   mode          String @unique
   lastPay       Int
-  rules         String @unique
+  admin         Boolean
+  ban           Boolean @unique
+  banDate       Int
+}
+
+model Admin {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  userId        Int @unique
+}
+
+model Password {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  password      String @unique
+}
+
+model Ban {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  userId        Int @unique
+  date          Int
+}
+
+model Announcement {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  media         String
+  text          String
+  button        String
 }
