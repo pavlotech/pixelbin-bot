@@ -10,6 +10,7 @@ export class Post extends Command {
     this.bot.command('post', async (ctx) => {
       try {
         const user = await database.findUnique('user', { userId: ctx.from.id })
+        if (!user) return;
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from.username} tried using the /post`)
 
         ctx.scene.enter('post')

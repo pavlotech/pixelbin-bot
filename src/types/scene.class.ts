@@ -432,6 +432,7 @@ export class Scene {
         }
       } catch (error) {
         this.logger.error(error)
+        ctx.scene.leave()
       }
     })
     return scene
@@ -473,6 +474,7 @@ export class Scene {
         }
       } catch (error) {
         this.logger.error(error)
+        ctx.scene.leave()
       }
     })
     return scene
@@ -514,6 +516,7 @@ export class Scene {
         }
       } catch (error) {
         this.logger.error(error)
+        ctx.scene.leave()
       }
     })
     return scene
@@ -551,7 +554,7 @@ export class Scene {
 *Дата регистрации: ${new Date(user.registry).toLocaleDateString()}
 Использований: ${user.subscribe}
 Режим: ${user.mode === 'remove_background' ? 'Удаление фона' : user.mode === 'remove_watermark' ? 'Удаление водяных знаков' : ''}
-Последний платеж: ${user.lastPay === 0 ? 'Пусто' : new Date(user.banDate).toLocaleDateString()}
+Последний платеж: ${user.lastPay === 0 ? 'Пусто' : new Date(user.lastPay).toLocaleDateString()}
 Админ: ${user.admin ? 'Да' : 'Нет'}
 Забанен: ${user.ban ? 'Да' : 'Нет'}
 Дата блокировки: ${user.banDate === 0 ? 'Пусто' : new Date(user.banDate).toLocaleDateString()}*`, { parse_mode: 'Markdown' })
@@ -563,6 +566,7 @@ export class Scene {
         }
       } catch (error) {
         this.logger.log(error)
+        ctx.scene.leave()
       }
     })
     return scene
@@ -602,6 +606,7 @@ export class Scene {
         }
       } catch (error) {
         this.logger.error(error)
+        ctx.scene.leave()
       }
     })
     return scene
@@ -644,6 +649,7 @@ export class Scene {
         }
       } catch (error) {
         this.logger.error(error)
+        ctx.scene.leave()
       }
     })
     return scene
@@ -683,6 +689,7 @@ export class Scene {
         }
       } catch (error) {
         this.logger.error(error)
+        ctx.scene.leave()
       }
     })
     return scene
@@ -725,6 +732,7 @@ export class Scene {
         }
       } catch (error) {
         this.logger.error(error)
+        ctx.scene.leave()
       }
     })
     return scene

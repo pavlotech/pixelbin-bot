@@ -10,6 +10,7 @@ export class Profile extends Command {
     this.bot.command('my_profile', async (ctx) => {
       try {
         const user = await database.findUnique('user', { userId: ctx.from.id })
+        if (!user) return;
         if (user.ban) return;
         ctx.reply(`
 *ID:* \`${ctx.from.id}\`

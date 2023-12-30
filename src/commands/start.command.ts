@@ -15,7 +15,7 @@ export class Start extends Command {
             userId: ctx.from.id,
             registry: Date.now(),
             subscribe: 0,
-            mode: 'remove_background',
+            mode: 'rem_background',
             lastPay: 0,
             admin: false,
             ban: false,
@@ -23,14 +23,48 @@ export class Start extends Command {
           })
           logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} saved`);
         }
+        const user = await database.findUnique('user', { userId: ctx.from.id });
+        if (user.ban) return;
+        await ctx.replyWithPhoto(
+          { source: 'start-image.jpg' },
+          {
+            caption: `
+Вы подписались на Kolersky_Photo_Bot!  
 
-        logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} use /start`)
+Он качественно удаляет фона или водяные знаки с фото с помощью нейросетей.  
+Подпишитесь на канал, чтобы всегда иметь актуальную информацию: @kolerskych.  
+Там же обсуждение и вопросы.  
+
+- удаление фона с изображений;  
+- удаление водяных знаков;  
+- одиночные и множественные запросы;  
+
+[Инструкция и примеры](https://kolersky.com/photo)  
+Для работы с нейросетью отравьте фото боту
+            `,
+            parse_mode: 'Markdown'
+          }
+        );
+        const message = `
+Для использования нейросети оплатите доступ.
+                
+После этого вы сразу сможете пользоваться нейросетью.
+                        
+Для просмотра тарифов жмите /vip
+        `
+        async function reply () {
+          await new Promise(resolve => setTimeout(resolve, 250));
+          ctx.reply(message, { parse_mode: 'Markdown' });
+        }
+        if (!user || user.subscribe <= 0) {
+          await reply()
+        }
+        if (!user) {
+          await createUser()
+        }
         const urlData = ctx.message.text.split(' ')[1]
         if (urlData) {
           if (await database.findUnique('user', { userId: ctx.from.id }).ban) return;
-          if (!await database.findUnique('user', { userId: ctx.from.id })) {
-            await createUser();
-          }
           const data = await database.findUnique('password', { password: urlData })
           if (data) {
             ctx.reply(`*Вам выданы права администратора*`, { parse_mode: 'Markdown' })
@@ -47,42 +81,8 @@ export class Start extends Command {
           } else {
             logger.warn(`${ctx.from.id} - https://t.me/${ctx.from.username} attempt to obtain admin rights using an outdated link`)
           }
-        } else {
-          const user = await database.findUnique('user', { userId: ctx.from.id });
-          if (user.ban) return;
-          
-          await ctx.replyWithPhoto(
-            { source: 'start-image.jpg' },
-            {
-              caption: `
-Вы подписались на Kolersky_Photo_Bot!  
-  
-Он качественно удаляет фона или водяные знаки с фото с помощью нейросетей.  
-Подпишитесь на канал, чтобы всегда иметь актуальную информацию: @kolerskych.  
-Там же обсуждение и вопросы.  
-  
-- удаление фона с изображений;  
-- удаление водяных знаков;  
-- одиночные и множественные запросы;  
-  
-[Инструкция и примеры](https://kolersky.com/photo)  
-Для работы с нейросетью отравьте фото боту
-              `,
-              parse_mode: 'Markdown'
-            }
-          );
-          
-          // Задержка перед отправкой второго сообщения, если нужно
-          if (user.subscribe <= 0) {
-            await ctx.reply(`
-Для использования нейросети оплатите доступ.
-                  
-После этого вы сразу сможете пользоваться нейросетью.
-                  
-Для просмотра тарифов жмите /vip
-            `, { parse_mode: 'Markdown' });
-          }          
         }
+        logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} use /start`)
       } catch (error) {
         logger.error(error)
       }

@@ -12,6 +12,7 @@ export class Admin extends Command {
       try {
         logger.info(`${ctx.from?.id} - https://t.me/${ctx.from?.username} use /admin_panel`)
         const user = await database.findUnique('user', { userId: ctx.from?.id })
+        if (!user) return;
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried to log into the admin panel`)
 
         ctx.reply(`*Вы вошли в панель администратора*`, {

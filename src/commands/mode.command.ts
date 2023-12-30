@@ -10,6 +10,7 @@ export class Mode extends Command {
     this.bot.command('mode_rem_background', async (ctx) => {
       try {
         const user = await database.findUnique('user', { userId: ctx.from.id });
+        if (!user) return;
         if (user.ban) return
         
         ctx.reply(`*Режим изменен на удаление фона*`, { parse_mode: 'Markdown' });
@@ -23,6 +24,7 @@ export class Mode extends Command {
     this.bot.command('mode_rem_text', async (ctx) => {
       try {
         const user = await database.findUnique('user', { userId: ctx.from.id });
+        if (!user) return;
         if (user.ban) return
         
         ctx.reply(`*Режим изменен на удаление текста*`, { parse_mode: 'Markdown' });
@@ -36,6 +38,7 @@ export class Mode extends Command {
     this.bot.command('mode_rem_logo', async (ctx) => {
       try {
         const user = await database.findUnique('user', { userId: ctx.from.id });
+        if (!user) return;
         if (user.ban) return
         
         ctx.reply(`*Режим изменен на удаление логотипа*`, { parse_mode: 'Markdown' });

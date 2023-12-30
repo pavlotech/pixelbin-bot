@@ -10,7 +10,7 @@ export class Photo extends Command {
     super(bot);
   }
   handle (logger: any, database: any): void {
-    const pixelbin = async (fileUrl: string, fileId: string, mode: string) => {
+    const pixelbin = async (fileUrl: string, fileId: string, fileType: string, mode: string) => {
       const pixelbinConfig = new PixelbinConfig({
         domain: "https://api.pixelbin.io",
         apiSecret: this.config.get('API_SECRET')
@@ -21,13 +21,13 @@ export class Photo extends Command {
         url: fileUrl,
         path: "path",
         name: fileId,
-        access: "public-read",
+        access: "private",
         tags: ["tag1", "tag2"],
         metadata: {},
         overwrite: false,
         filenameOverride: true,
       });
-  
+
       let transformations: any[];
       switch (mode) {
         case 'rem_background':
@@ -47,7 +47,7 @@ export class Photo extends Command {
         zone: this.config.get('ZONE'),
         version: "v2",
         transformations,
-        filePath: `path/${fileId}.jpeg`,
+        filePath: `path/${fileId}.${fileType}`,
         baseUrl: "https://cdn.pixelbin.io",
       };
       return Pixelbin.url.objToUrl(obj);
@@ -55,6 +55,7 @@ export class Photo extends Command {
     this.bot.on('photo', async (ctx) => {
       try {
         const user = await database.findUnique('user', { userId: ctx.from.id })
+        if (!user) return;
         if (user?.ban) return;
         if (user?.subscribe <= 0) {
           return ctx.reply(`У вас закончились запросы.\nКупить еще 30 - /vip`, { parse_mode: 'Markdown' })
@@ -63,16 +64,13 @@ export class Photo extends Command {
         const fileId = photo[photo.length - 1].file_id;
         const fileUrl = (await ctx.telegram.getFileLink(fileId)).href;
 
-        //logger.log(photo)
-        //logger.log(fileUrl)
-
-        const pixelbinUrl = await pixelbin(fileUrl, fileId, user.mode)
-
-        //logger.log(pixelbinUrl)
-
+        const fileType = 'jpeg'
         ctx.replyWithChatAction('upload_document');
-        ctx.replyWithDocument({ url: pixelbinUrl, filename: 'image.png' });
+        const pixelbinUrl = await pixelbin(fileUrl, fileId, fileType, user.mode)
 
+        ctx.replyWithDocument({ url: pixelbinUrl, filename: `image.${fileType}` });
+
+        logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} received photo ${pixelbinUrl}`)
         await database.update('user', { userId: ctx.from.id }, { subscribe: user?.subscribe - 1 })
       } catch (error) {
         logger.error(error)
@@ -81,25 +79,41 @@ export class Photo extends Command {
     this.bot.on('document', async (ctx) => {
       try {
         const user = await database.findUnique('user', { userId: ctx.from.id })
+        if (!user) return;
         if (user?.ban) return;
         if (user?.subscribe <= 0) {
           return ctx.reply(`У вас закончились запросы.\nКупить еще 30 - /vip`, { parse_mode: 'Markdown' })
         }
         const document = ctx.message?.document
-        const fileId = document.thumbnail?.file_id;
+        const fileId = document.file_id;
         const fileUrl = (await ctx.telegram.getFileLink(fileId || '')).href;
 
-        //logger.log(document)
-        //logger.log(fileUrl)
-
-        const pixelbinUrl = await pixelbin(fileUrl, fileId || '', user.mode)
-
-        //logger.log(pixelbinUrl)
-
-        ctx.replyWithChatAction('upload_document');
-        ctx.replyWithDocument({ url: pixelbinUrl, filename: 'image.png' });
-        
-        await database.update('user', { userId: ctx.from.id }, { subscribe: user?.subscribe - 1 })
+        function checkImageType(url: string): string | null {
+          const regex = /\.(jpg|jpeg|png)$/i;
+          const match = url.match(regex);
+          if (match) {
+            const extension = match[1].toLowerCase();
+            if (extension === 'jpg') {
+              return 'jpeg';
+            } else {
+              return extension;
+            }
+          } else {
+            return null;
+          }
+        }
+        const fileType = checkImageType(fileUrl);
+        if (fileType) {
+          ctx.replyWithChatAction('upload_document');
+          const pixelbinUrl = await pixelbin(fileUrl, fileId, fileType, user.mode)
+  
+          ctx.replyWithDocument({ url: pixelbinUrl, filename: `image.${fileType}` });
+  
+          logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} received photo ${pixelbinUrl}`)
+          await database.update('user', { userId: ctx.from.id }, { subscribe: user?.subscribe - 1 })
+        } else {
+          ctx.reply(`*Это не фото*`, { parse_mode: 'Markdown' })
+        }
       } catch (error) {
         logger.error(error)
       }

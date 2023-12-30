@@ -14,6 +14,7 @@ import { Database } from "./types/database.class";
 import { Admin } from "./commands/admin.command";
 import { Scene } from "./types/scene.class";
 import { Post } from "./commands/post.command";
+import { VipScene } from "./commands/vip.scene";
 
 export class Bot {
   bot!: Telegraf<IBotContext>;
@@ -25,6 +26,7 @@ export class Bot {
   constructor (private readonly config: IConfigService) {
     this.bot = new Telegraf<IBotContext>(this.config.get('TOKEN'), { handlerTimeout: 60 * 60 * 1000 })
     const scene = new Scene(this.database, this.logger);
+    const vip = new VipScene(this.database, this.logger, this.config)
     const stage = new Scenes.Stage<IBotContext>([
       scene.create_announcement(),
       scene.remove_announcement(),
@@ -38,7 +40,8 @@ export class Bot {
       scene.give_requests(),
       scene.take_away_requests(),
       scene.give_requests_cb(),
-      scene.take_away_requests_cb()
+      scene.take_away_requests_cb(),
+      vip.get_email()
     ], { ttl: 10 * 60 * 1000 });
 
     this.bot.use(session())
@@ -75,11 +78,11 @@ export class Bot {
       },
       {
         command: 'mode_rem_text',
-        description: 'Удаление текста'
+        description: 'Удаление вод. знаков (текст)'
       },
       {
         command: 'mode_rem_logo',
-        description: 'Удаление логотипа'
+        description: 'Удаление вод. знаков (лого)'
       }
     ])
     this.bot.launch()
