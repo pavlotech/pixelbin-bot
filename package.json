@@ -1,11 +1,11 @@
 {
-  "name": "photo-editor-bot",
+  "name": "pixelbin-bot",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon ./dist/index.js",
+    "start": "node ./dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -22,14 +22,9 @@
   },
   "dependencies": {
     "@pixelbin/admin": "^3.7.0",
-    "@pixelbin/core": "^5.4.0",
     "@prisma/client": "^5.7.1",
-    "axios": "^1.6.2",
-    "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
-    "fs": "^0.0.1-security",
     "nodemon": "^3.0.2",
-    "telegraf": "^4.15.3",
-    "telegraf-session-local": "^2.1.1"
+    "telegraf": "^4.15.3"
   }
 }
