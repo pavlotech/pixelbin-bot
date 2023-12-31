@@ -13,13 +13,13 @@ export class Start extends Command {
         async function createUser () {
           await database.create('user', {
             userId: ctx.from.id,
-            registry: Date.now(),
+            registry: `${Date.now()}`,
             subscribe: 0,
             mode: 'rem_background',
-            lastPay: 0,
+            lastPay: '0',
             admin: false,
             ban: false,
-            banDate: 0
+            banDate: '0'
           })
           logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} saved`);
         }

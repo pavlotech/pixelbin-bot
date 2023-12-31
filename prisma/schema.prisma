@@ -6,40 +6,29 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:data.db"
 }
 
 model User {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
-  userId        Int    @unique
-  registry      Int 
-  subscribe     Int    @unique
-  mode          String @unique
-  lastPay       Int
+  id            String @id @default(uuid())
+  userId        Int     @unique
+  registry      String
+  subscribe     Int     
+  mode          String  @unique
+  lastPay       String
   admin         Boolean
   ban           Boolean @unique
-  banDate       Int
-}
-
-model Admin {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
-  userId        Int @unique
+  banDate       String
 }
 
 model Password {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  id            String @id @default(uuid())
   password      String @unique
 }
 
-model Ban {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
-  userId        Int @unique
-  date          Int
-}
-
 model Announcement {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  id            String @id @default(uuid())
   media         String
   text          String
   button        String

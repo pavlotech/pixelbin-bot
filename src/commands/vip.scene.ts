@@ -123,7 +123,7 @@ export class VipScene {
     
             if (invoice.Status === 'CONFIRMED') {
               const user = await this.database.findUnique('user', { userId: userId });
-              await this.database.update('user', { userId: userId }, { subscribe: user.subscribe + 30, lastPay: Date.now() });
+              await this.database.update('user', { userId: userId }, { subscribe: user.subscribe + 30, lastPay: `${Date.now()}` });
               await ctx.reply('*Спасибо за подписку!*', { parse_mode: 'Markdown' });
               this.logger.info(`${userId} - https://t.me/${ctx.from?.username} bought a subscription`);
             } else {

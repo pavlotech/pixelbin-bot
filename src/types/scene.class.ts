@@ -464,7 +464,7 @@ export class Scene {
 
         if (this.isNumber(response)) {
           const id = Number(response);
-          await this.database.update('user', { userId: id }, { ban: true, banDate: Date.now() })
+          await this.database.update('user', { userId: id }, { ban: true, banDate: `${Date.now()}` })
           ctx.reply(`*ID:* \`${id}\` *забанен*`, { parse_mode: 'Markdown' })
           this.logger.info(`${id} banned`)
           ctx.scene.leave()
@@ -506,7 +506,7 @@ export class Scene {
 
         if (this.isNumber(response)) {
           const id = Number(response);
-          await this.database.update('user', { userId: id }, { ban: false, banDate: 0 })
+          await this.database.update('user', { userId: id }, { ban: false, banDate: '0' })
           ctx.reply(`*ID:* \`${id}\` *разбанен*`, { parse_mode: 'Markdown' })
           this.logger.info(`${id} unbanned`)
           ctx.scene.leave()
@@ -551,13 +551,13 @@ export class Scene {
           const user = await this.database.findUnique('user', { userId: id })
           ctx.reply(`
 *ID:* \`${user.userId}\`
-*Дата регистрации: ${new Date(user.registry).toLocaleDateString()}
+*Дата регистрации: ${new Date(Number(user.registry)).toLocaleDateString()}
 Использований: ${user.subscribe}
 Режим: ${user.mode === 'remove_background' ? 'Удаление фона' : user.mode === 'remove_watermark' ? 'Удаление водяных знаков' : ''}
-Последний платеж: ${user.lastPay === 0 ? 'Пусто' : new Date(user.lastPay).toLocaleDateString()}
+Последний платеж: ${user.lastPay === 0 ? 'Пусто' : new Date(Number(user.lastPay)).toLocaleDateString()}
 Админ: ${user.admin ? 'Да' : 'Нет'}
 Забанен: ${user.ban ? 'Да' : 'Нет'}
-Дата блокировки: ${user.banDate === 0 ? 'Пусто' : new Date(user.banDate).toLocaleDateString()}*`, { parse_mode: 'Markdown' })
+Дата блокировки: ${user.banDate === 0 ? 'Пусто' : new Date(Number(user.banDate)).toLocaleDateString()}*`, { parse_mode: 'Markdown' })
           this.logger.info(`${ctx.from.id} viewed user profile id: ${id}`)
           ctx.scene.leave()
         } else {
