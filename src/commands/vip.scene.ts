@@ -1,5 +1,5 @@
 import { Scenes } from "telegraf"
-import { IBotContext } from "../context/context.interface"
+import { IBotContext, ISceneContext } from "../context/context.interface"
 import { tinkoffPAY } from "../types/tinkoff.class";
 
 export class VipScene {
@@ -7,9 +7,9 @@ export class VipScene {
   private tokenAdd = 30;
   private tinkoff: tinkoffPAY;
 
-  private editMessageIds: Map<number, number | null> = new Map<number, number | null>();
-  private paymentIds: Map<number, string | null> = new Map<number, string | null>();
-  private paymentStatuses: Map<number, boolean | null> = new Map<number, boolean | null>();
+  private editMessageId: Map<string, number | null> = new Map<string, number | null>();
+  private paymentId: Map<string, string | null> = new Map<string, string | null>();
+  private paymentStatuse: Map<string, boolean | null> = new Map<string, boolean | null>();
   private database: any
   private logger: any
   private readonly config: any
@@ -20,7 +20,7 @@ export class VipScene {
     this.tinkoff = new tinkoffPAY(this.config.get('SHOP_ID'), this.config.get('SECRET_KEY'));
   }
   public get_email () {
-    const scene = new Scenes.BaseScene<IBotContext>('get_email')
+    const scene = new Scenes.BaseScene<ISceneContext>('get_email')
     scene.enter(async (ctx) => {
       try {
         await ctx.reply(`*Введите E-Mail*`, {
@@ -33,6 +33,7 @@ export class VipScene {
         })
       } catch (error) {
         this.logger.log(error)
+        ctx.scene.leave()
       }
     })
     scene.action('cancel', async (ctx) => {
@@ -46,7 +47,7 @@ export class VipScene {
     })
     scene.on('text', async (ctx) => {
       try {
-        const user = await this.database.findUnique('user', { userId: ctx.from?.id });
+        const user = await this.database.findUnique('user', { userId: String(ctx.from?.id) });
         if (!user) return;
         if (user.ban) return;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -54,7 +55,7 @@ export class VipScene {
 
         if (!emailRegex.test(email)) {
           ctx.reply(`*Это не E-Mail*`, { parse_mode: 'Markdown' })
-          ctx.scene.reenter()
+          return ctx.scene.reenter()
         }
     
         let numPay = user.lastPay / 1 + 1;
@@ -97,9 +98,9 @@ export class VipScene {
             },
           });
     
-          this.editMessageIds.set(user.userId, editMessage.message_id);
-          this.paymentIds.set(user.userId, invoice.PaymentId);
-          this.paymentStatuses.set(user.userId, true);
+          this.editMessageId.set(user.userId, editMessage.message_id);
+          this.paymentId.set(user.userId, invoice.PaymentId);
+          this.paymentStatuse.set(user.userId, true);
         }).catch((error) => this.logger.error(error));
       } catch (error) {
         this.logger.error(error);
@@ -108,14 +109,14 @@ export class VipScene {
     })
     scene.action('i_paid', async (ctx) => {
       try {
-        const userId = ctx.from?.id;
+        const userId = String(ctx.from?.id);
         if (userId) {
-          const editMessageId = this.editMessageIds.get(userId);
-          const paymentId = this.paymentIds.get(userId);
-          const paymentStatus = this.paymentStatuses.get(userId);
+          const editMessageId = this.editMessageId.get(userId);
+          const paymentId = this.paymentId.get(userId);
+          const paymentStatus = this.paymentStatuse.get(userId);
     
           if (editMessageId && paymentId && paymentStatus) {
-            this.paymentStatuses.set(userId, false);
+            this.paymentStatuse.set(userId, false);
     
             await ctx.telegram.editMessageText(ctx.chat?.id, editMessageId, '', '*Обработка оплаты...*', { parse_mode: 'Markdown' });
     
@@ -124,16 +125,16 @@ export class VipScene {
             if (invoice.Status === 'CONFIRMED') {
               const user = await this.database.findUnique('user', { userId: userId });
               await this.database.update('user', { userId: userId }, { subscribe: user.subscribe + 30, lastPay: `${Date.now()}` });
-              await ctx.reply('*Спасибо за подписку!*', { parse_mode: 'Markdown' });
+              ctx.reply('*Спасибо за подписку!*', { parse_mode: 'Markdown' });
               this.logger.info(`${userId} - https://t.me/${ctx.from?.username} bought a subscription`);
             } else {
-              await ctx.reply('<b>Платёж не прошёл</b>', { parse_mode: 'HTML' });
+              ctx.reply('<b>Платёж не прошёл</b>', { parse_mode: 'HTML' });
               this.logger.info(`${userId} - https://t.me/${ctx.from?.username} payment failed`);
             }
           }
-          this.editMessageIds.delete(userId);
-          this.paymentIds.delete(userId);
-          this.paymentStatuses.delete(userId);
+          this.editMessageId.delete(userId);
+          this.paymentId.delete(userId);
+          this.paymentStatuse.delete(userId);
           ctx.scene.leave();
         }
       } catch (error) {

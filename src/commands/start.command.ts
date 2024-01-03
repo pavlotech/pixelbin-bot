@@ -12,7 +12,7 @@ export class Start extends Command {
       try {
         async function createUser () {
           await database.create('user', {
-            userId: ctx.from.id,
+            userId: String(ctx.from.id),
             registry: `${Date.now()}`,
             subscribe: 0,
             mode: 'rem_background',
@@ -23,7 +23,7 @@ export class Start extends Command {
           })
           logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} saved`);
         }
-        const user = await database.findUnique('user', { userId: ctx.from.id });
+        const user = await database.findUnique('user', { userId: String(ctx.from.id) });
         if (user.ban) return;
         await ctx.replyWithPhoto(
           { source: 'start-image.jpg' },
@@ -64,11 +64,11 @@ export class Start extends Command {
         }
         const urlData = ctx.message.text.split(' ')[1]
         if (urlData) {
-          if (await database.findUnique('user', { userId: ctx.from.id }).ban) return;
+          if (await database.findUnique('user', { userId: String(ctx.from.id) }).ban) return;
           const data = await database.findUnique('password', { password: urlData })
           if (data) {
             ctx.reply(`*Вам выданы права администратора*`, { parse_mode: 'Markdown' })
-            await database.update('user', { userId: ctx.from.id }, { admin: true })
+            await database.update('user', { userId: String(ctx.from.id)}, { admin: true })
             await database.delete('password', { id: data.id })
 
             const users = await database.findMany('user')

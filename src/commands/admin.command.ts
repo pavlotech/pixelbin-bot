@@ -11,7 +11,7 @@ export class Admin extends Command {
     this.bot.command('admin_panel', async (ctx) => {
       try {
         logger.info(`${ctx.from?.id} - https://t.me/${ctx.from?.username} use /admin_panel`)
-        const user = await database.findUnique('user', { userId: ctx.from?.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from?.id) })
         if (!user) return;
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried to log into the admin panel`)
 
@@ -37,7 +37,7 @@ export class Admin extends Command {
     })
     this.bot.action('give_requests', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from?.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from?.id) })
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried using the admin panel`)
 
         ctx.scene.enter('give_requests')
@@ -47,7 +47,7 @@ export class Admin extends Command {
     })
     this.bot.action('take_away_requests', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from?.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from?.id) })
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried using the admin panel`)
 
         ctx.scene.enter('take_away_requests')
@@ -57,7 +57,7 @@ export class Admin extends Command {
     })
     this.bot.action('create_announcement', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from?.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from?.id) })
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried using the admin panel`)
 
         ctx.scene.enter('create_announcement')
@@ -67,7 +67,7 @@ export class Admin extends Command {
     })
     this.bot.action('remove_announcement', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from?.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from?.id) })
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried using the admin panel`)
 
         ctx.scene.enter('remove_announcement')
@@ -77,7 +77,7 @@ export class Admin extends Command {
     })
     this.bot.action('add_admin', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from?.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from?.id) })
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried using the admin panel`)
 
         const password = generatePassword(30)
@@ -96,7 +96,7 @@ export class Admin extends Command {
     })
     this.bot.action('remove_admin', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from?.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from?.id) })
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried using the admin panel`)
 
         ctx.scene.enter('remove_admin')
@@ -106,7 +106,7 @@ export class Admin extends Command {
     })
     this.bot.action('ban_user', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from?.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from?.id) })
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried using the admin panel`)
 
         ctx.scene.enter('ban_user')
@@ -116,7 +116,7 @@ export class Admin extends Command {
     })
     this.bot.action('unban_user', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from?.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from?.id) })
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried using the admin panel`)
 
         ctx.scene.enter('unban_user')
@@ -126,7 +126,7 @@ export class Admin extends Command {
     })
     this.bot.action('profile_user', async (ctx: IBotContext) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from?.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from?.id) })
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried using the admin panel`)
 
         ctx.scene.enter('profile_user')

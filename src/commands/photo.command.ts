@@ -54,7 +54,7 @@ export class Photo extends Command {
     }
     this.bot.on('photo', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from.id) })
         if (!user) return;
         if (user?.ban) return;
         if (user?.subscribe <= 0) {
@@ -71,14 +71,14 @@ export class Photo extends Command {
         ctx.replyWithDocument({ url: pixelbinUrl, filename: `image.${fileType}` });
 
         logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} received photo ${pixelbinUrl}`)
-        await database.update('user', { userId: ctx.from.id }, { subscribe: user?.subscribe - 1 })
+        await database.update('user', { userId: String(ctx.from.id) }, { subscribe: user?.subscribe - 1 })
       } catch (error) {
         logger.error(error)
       }
     });
     this.bot.on('document', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from.id) })
         if (!user) return;
         if (user?.ban) return;
         if (user?.subscribe <= 0) {
@@ -110,7 +110,7 @@ export class Photo extends Command {
           ctx.replyWithDocument({ url: pixelbinUrl, filename: `image.${fileType}` });
   
           logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} received photo ${pixelbinUrl}`)
-          await database.update('user', { userId: ctx.from.id }, { subscribe: user?.subscribe - 1 })
+          await database.update('user', { userId: String(ctx.from.id) }, { subscribe: user?.subscribe - 1 })
         } else {
           ctx.reply(`*Это не фото*`, { parse_mode: 'Markdown' })
         }

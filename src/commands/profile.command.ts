@@ -9,7 +9,7 @@ export class Profile extends Command {
   handle (logger: any, database: any): void {
     this.bot.command('my_profile', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from.id) })
         if (!user) return;
         if (user.ban) return;
         ctx.reply(`

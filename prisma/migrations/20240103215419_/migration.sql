@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "userId" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
     "registry" TEXT NOT NULL,
     "subscribe" INTEGER NOT NULL,
     "mode" TEXT NOT NULL,
@@ -26,13 +26,16 @@ CREATE TABLE "Announcement" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "User_userId_key" ON "User"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_mode_key" ON "User"("mode");
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_ban_key" ON "User"("ban");
+CREATE UNIQUE INDEX "Password_id_key" ON "Password"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Password_password_key" ON "Password"("password");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Announcement_id_key" ON "Announcement"("id");

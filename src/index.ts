@@ -1,7 +1,7 @@
 import { ConfigService } from "./config/config.service";
 import { IConfigService } from './config/config.interface';
 import { Telegraf, session, Scenes } from "telegraf";
-import { IBotContext } from "./context/context.interface";
+import { IBotContext, ISceneContext } from "./context/context.interface";
 import { Command } from "./commands/command.class";
 import { Start } from "./commands/start.command";
 import { PrismaClient } from '@prisma/client'
@@ -15,6 +15,7 @@ import { Admin } from "./commands/admin.command";
 import { Scene } from "./types/scene.class";
 import { Post } from "./commands/post.command";
 import { VipScene } from "./commands/vip.scene";
+import LocalSession from "telegraf-session-local";
 
 export class Bot {
   bot!: Telegraf<IBotContext>;
@@ -27,7 +28,7 @@ export class Bot {
     this.bot = new Telegraf<IBotContext>(this.config.get('TOKEN'), { handlerTimeout: 60 * 60 * 1000 })
     const scene = new Scene(this.database, this.logger);
     const vip = new VipScene(this.database, this.logger, this.config)
-    const stage = new Scenes.Stage<IBotContext>([
+    const stage = new Scenes.Stage<ISceneContext>([
       scene.create_announcement(),
       scene.remove_announcement(),
       scene.get_text(),
@@ -44,7 +45,7 @@ export class Bot {
       vip.get_email()
     ], { ttl: 10 * 60 * 1000 });
 
-    this.bot.use(session())
+    this.bot.use(new LocalSession({ database: 'session.json'}))
     this.bot.use(stage.middleware());  
   }
   init () {

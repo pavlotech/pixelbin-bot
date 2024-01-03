@@ -9,7 +9,7 @@ export class Post extends Command {
   handle (logger: any, database: any): void {
     this.bot.command('post', async (ctx) => {
       try {
-        const user = await database.findUnique('user', { userId: ctx.from.id })
+        const user = await database.findUnique('user', { userId: String(ctx.from.id) })
         if (!user) return;
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from.username} tried using the /post`)
 

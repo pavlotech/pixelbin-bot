@@ -22,11 +22,7 @@ export class Logger {
   public warn (message: any) {
     Logger.message('WARN', message, '\x1b[33m'); // Желтый цвет для WARN
   }
-  public error (error: Error | string) {
-    if (error instanceof Error) {
-      Logger.message('ERROR', `${error.name}: ${error.message}\x1b[0m`, '\x1b[31m');
-    } else {
-      Logger.message('ERROR', `${'\x1b[31m'}${error}\x1b[0m`, '\x1b[31m');
-    }
+  public error (error: any) {
+    Logger.message('ERROR', `${error.name}: ${error.message}\x1b[0m`, '\x1b[31m');
   }
 }
