@@ -44,8 +44,8 @@ export class Bot {
       scene.take_away_requests_cb(),
       vip.get_email()
     ], { ttl: 10 * 60 * 1000 });
-
-    this.bot.use(new LocalSession({ database: 'session.json'}))
+    this.bot.use(session())
+    //this.bot.use(new LocalSession({ database: 'session.json'}))
     this.bot.use(stage.middleware());  
   }
   init () {

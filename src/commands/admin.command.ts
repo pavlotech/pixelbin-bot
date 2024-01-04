@@ -2,6 +2,7 @@ import { Scenes, Telegraf } from "telegraf";
 import { IBotContext } from "../context/context.interface";
 import { Command } from "./command.class";
 import { IConfigService } from "../config/config.interface";
+import { admin } from "../../settings";
 
 export class Admin extends Command {
   constructor (bot: Telegraf<IBotContext>) {
@@ -81,10 +82,10 @@ export class Admin extends Command {
         if (!user.admin) return logger.warn(`${ctx.from?.id} - https://t.me/${ctx.from?.username} tried using the admin panel`)
 
         const password = generatePassword(30)
-        ctx.reply(`*Нажмите чтобы получить права администратора*`, {
+        ctx.reply(admin.text, {
           reply_markup: {
             inline_keyboard: [
-              [{ text: `Получить`, url: `https://t.me/${ctx.botInfo.username}?start=${password}` }]
+              [{ text: admin.button, url: `https://t.me/${ctx.botInfo.username}?start=${password}` }]
             ]
           },
           parse_mode: 'MarkdownV2'

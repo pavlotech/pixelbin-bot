@@ -1,9 +1,10 @@
 import { Scenes } from "telegraf"
 import { IBotContext, ISceneContext } from "../context/context.interface"
 import { tinkoffPAY } from "../types/tinkoff.class";
+import { vip } from "../../settings";
 
 export class VipScene {
-  private priceVIP = 490;
+  private priceVIP = vip.price;
   private tokenAdd = 30;
   private tinkoff: tinkoffPAY;
 
@@ -118,13 +119,13 @@ export class VipScene {
           if (editMessageId && paymentId && paymentStatus) {
             this.paymentStatuse.set(userId, false);
     
-            await ctx.telegram.editMessageText(ctx.chat?.id, editMessageId, '', '*Обработка оплаты...*', { parse_mode: 'Markdown' });
+            await ctx.telegram.editMessageText(ctx.chat?.id, editMessageId, '', vip.paymentCheck, { parse_mode: 'Markdown' });
     
             const invoice: any = await this.tinkoff.statusInvoice(paymentId);
     
             if (invoice.Status === 'CONFIRMED') {
               const user = await this.database.findUnique('user', { userId: userId });
-              await this.database.update('user', { userId: userId }, { subscribe: user.subscribe + 30, lastPay: `${Date.now()}` });
+              await this.database.update('user', { userId: userId }, { subscribe: user.subscribe + vip.quantity, lastPay: `${Date.now()}` });
               ctx.reply('*Спасибо за подписку!*', { parse_mode: 'Markdown' });
               this.logger.info(`${userId} - https://t.me/${ctx.from?.username} bought a subscription`);
             } else {

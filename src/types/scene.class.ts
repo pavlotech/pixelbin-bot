@@ -150,10 +150,9 @@ export class Scene {
     scene.on('text', async (ctx) => {
       try {
         const response = ctx.message.text
-        this.logger.log(response)
 
         const id = this.dataId.get(String(ctx.from?.id))
-        this.logger.log(await this.database.update('announcement', { id: id }, { text: response }))
+        await this.database.update('announcement', { id: id }, { text: response })
         ctx.scene.enter('get_button')
       } catch (error) {
         this.logger.error(error)

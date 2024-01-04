@@ -3,6 +3,7 @@ import { Command } from "./command.class";
 import { IBotContext } from "../context/context.interface";
 import { tinkoffPAY } from "../types/tinkoff.class";
 import { IConfigService } from "../config/config.interface";
+import { vip } from "../../settings";
 
 export class Vip extends Command {
   constructor(bot: Telegraf<IBotContext>, private readonly config: IConfigService) {
@@ -14,13 +15,7 @@ export class Vip extends Command {
         const user = await database.findUnique('user', { userId: String(ctx.from.id) });
         if (!user) return;
         if (user.ban) return;
-        ctx.reply(`*
-Подписка дает 30 обработок изображений в сумме. 
-
-Стоимость: 490 руб
-
-Чтобы купить нажмите на кнопку ниже
-        *`, {
+        ctx.reply(vip.firstMessage, {
           reply_markup: {
             inline_keyboard: [
               [{ text: "Купить", callback_data: 'buy' }]

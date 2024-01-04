@@ -2,6 +2,7 @@ import { Telegraf } from "telegraf";
 import { Command } from "./command.class";
 import { IBotContext } from "../context/context.interface";
 import { IConfigService } from "../config/config.interface";
+import { start } from '../../settings'
 
 export class Start extends Command {
   constructor (bot: Telegraf<IBotContext>, private readonly config: IConfigService) {
@@ -28,33 +29,13 @@ export class Start extends Command {
         await ctx.replyWithPhoto(
           { source: 'start-image.jpg' },
           {
-            caption: `
-Вы подписались на Kolersky_Photo_Bot!  
-
-Он качественно удаляет фона или водяные знаки с фото с помощью нейросетей.  
-Подпишитесь на канал, чтобы всегда иметь актуальную информацию: @kolerskych.  
-Там же обсуждение и вопросы.  
-
-- удаление фона с изображений;  
-- удаление водяных знаков;  
-- одиночные и множественные запросы;  
-
-[Инструкция и примеры](https://kolersky.com/photo)  
-Для работы с нейросетью отравьте фото боту
-            `,
+            caption: start.firstMessage,
             parse_mode: 'Markdown'
           }
         );
-        const message = `
-Для использования нейросети оплатите доступ.
-                
-После этого вы сразу сможете пользоваться нейросетью.
-                        
-Для просмотра тарифов жмите /vip
-        `
         async function reply () {
           await new Promise(resolve => setTimeout(resolve, 250));
-          ctx.reply(message, { parse_mode: 'Markdown' });
+          ctx.reply(start.secondMessage, { parse_mode: 'Markdown' });
         }
         if (!user || user.subscribe <= 0) {
           await reply()

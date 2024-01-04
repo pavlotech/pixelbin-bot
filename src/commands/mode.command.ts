@@ -1,6 +1,7 @@
 import { Telegraf } from "telegraf";
 import { Command } from "./command.class";
 import { IBotContext } from "../context/context.interface";
+import { mode } from "../../settings";
 
 export class Mode extends Command {
   constructor (bot: Telegraf<IBotContext>) {
@@ -13,7 +14,7 @@ export class Mode extends Command {
         if (!user) return;
         if (user.ban) return
         
-        ctx.reply(`*Режим изменен на удаление фона*`, { parse_mode: 'Markdown' });
+        ctx.reply(mode.rem_background, { parse_mode: 'Markdown' });
         await database.update('user', { userId: String(ctx.from.id) }, { mode: 'rem_background' });
 
         logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} changed mode to rem_background`)
@@ -27,7 +28,7 @@ export class Mode extends Command {
         if (!user) return;
         if (user.ban) return
         
-        ctx.reply(`*Режим изменен на удаление текста*`, { parse_mode: 'Markdown' });
+        ctx.reply(mode.rem_text, { parse_mode: 'Markdown' });
         await database.update('user', { userId: String(ctx.from.id) }, { mode: 'rem_text' });
 
         logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} changed mode to rem_text`)
@@ -41,7 +42,7 @@ export class Mode extends Command {
         if (!user) return;
         if (user.ban) return
         
-        ctx.reply(`*Режим изменен на удаление логотипа*`, { parse_mode: 'Markdown' });
+        ctx.reply(mode.rem_logo, { parse_mode: 'Markdown' });
         await database.update('user', { userId: String(ctx.from.id) }, { mode: 'rem_logo' });
 
         logger.info(`${ctx.from.id} - https://t.me/${ctx.from.username} changed mode to rem_logo`)
