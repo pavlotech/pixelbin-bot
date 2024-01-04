@@ -33,7 +33,7 @@ export class VipScene {
           parse_mode: 'Markdown'
         })
       } catch (error) {
-        this.logger.log(error)
+        this.logger.error(error)
         ctx.scene.leave()
       }
     })

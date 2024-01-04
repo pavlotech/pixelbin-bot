@@ -69,7 +69,6 @@ export class Scene {
       try {
         const fileId = ctx.message.document.file_id
         const fileUrl = (await ctx.telegram.getFileLink(fileId)).href;
-        this.logger.log(fileUrl)
 
         //media.push(fileUrl)
 
@@ -200,7 +199,6 @@ export class Scene {
               const button = [{ text, url }];
               buttonArrays.push(button);
             }
-            this.logger.log(buttonArrays);
           }
           
           const users = await this.database.findMany('user');
